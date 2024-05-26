@@ -166,6 +166,33 @@ app.post('/signup',async (req,res)=>{
 
 })
 
+//user login
+app.post('/login', async (req, res) => {
+    try {
+        let user = await Users.findOne({ email: req.body.email });
+        if (user) {
+            const passCompare = req.body.password === user.password;
+            if (passCompare) {
+                const data = {
+                    user: {
+                        id: user.id
+                    }
+                };
+                const token = jwt.sign(data, 'secret_mcube');
+                res.json({ success: true, token });
+            } else {
+                res.json({ success: false, errors: "Wrong password" });
+            }
+        } else {
+            res.json({ success: false, errors: "Wrong email" });
+        }
+    } catch (error) {
+        console.error("Error occurred during login:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+});
+
+
 app.listen(port, (error) => {
     if (!error) {
         console.log("Server is running on port " + port);
