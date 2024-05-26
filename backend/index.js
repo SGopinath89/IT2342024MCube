@@ -207,6 +207,46 @@ app.get('/newcollections', async (req, res) => {
     }
 });
 
+//Middlware to fetch user
+const fetchuser = async (req, res, next) => {
+    const token = req.header('auth-token');
+    if (!token) {
+        return res.status(401).send({ errors: "Please authenticate using a valid token" });
+    }
+
+    try {
+        const data = jwt.verify(token, 'secret_mcube');
+        req.user = data.user;
+        next();
+    } catch (error) {
+        return res.status(401).send({ errors: "Please authenticate using a valid token" });
+    }
+};
+
+// Add to cart route
+app.post('/addtocart', fetchuser, async (req, res) => {
+    console.log("Added",req.body.itemId);
+    let userData = await Users.findOne({_id:req.user.id});
+    userData.cartData[req.body.itemId] += 1;
+    Users.findOneAndUpdate({_id:req.user.id},{cartData:userData.cartData});
+    res.send("Added");
+});
+
+//Remove from cart
+app.post('/removefromcart',fetchuser,async (req,res) => {
+    console.log("Removed",req.body.itemId);
+    let userData = await Users.findOne({_id:req.user.id});
+    userData.cartData[req.body.itemId] -= 1;
+    Users.findOneAndUpdate({_id:req.user.id},{cartData:userData.cartData});
+    res.send("Removed");
+})
+
+//Get cart data
+app.post('/getcart',fetchuser,async (req,res) =>{
+    console.log("GetCart");
+    let userData = await Users.findOne({_id:req.user.id});
+    res.json(userData.cartData);
+})
 
 app.listen(port, (error) => {
     if (!error) {
