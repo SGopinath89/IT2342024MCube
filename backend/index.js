@@ -192,6 +192,21 @@ app.post('/login', async (req, res) => {
     }
 });
 
+//New Collections
+app.get('/newcollections', async (req, res) => {
+    try {
+        let products = await Product.find({}).sort({ date: -1 });
+
+        let newCollection = products.slice(0, 8);
+
+        console.log("New Collections Fetched");
+        res.json(newCollection);
+    } catch (error) {
+        console.error("Error occurred while fetching new collections:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+});
+
 
 app.listen(port, (error) => {
     if (!error) {
