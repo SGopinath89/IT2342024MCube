@@ -2,6 +2,7 @@ const port = 4000;
 const express = require("express");
 const app = express();
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken'); 
 const multer = require("multer");
 const path = require("path");
 const cors = require("cors");
@@ -10,9 +11,6 @@ app.use(express.json());
 app.use(cors());
 
 mongoose.connect("mongodb+srv://mcube:mcube123@cluster0.ojhuygi.mongodb.net/mcube?retryWrites=true&w=majority&appName=Cluster0");
-
-// Serve static files
-app.use('/images', express.static('upload/images'));
 
 // Image storage
 const storage = multer.diskStorage({
@@ -23,6 +21,17 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+// Serve static files
+app.use('/images', express.static('upload/images'));
+
+app.post("/upload",upload.single('product'),(req,res)=>{
+    res.json({
+        success:1,
+        image_url:`http://localhost:${port}/images/${req.file.filename}`
+    })
+})
+
 
 const Product = mongoose.model("Product", {
     id: {
@@ -59,6 +68,10 @@ const Product = mongoose.model("Product", {
     }
 });
 
+app.get("/",(req,res)=>{
+    res.send("Express app is running")
+})
+
 app.post('/addproduct', async (req, res) => {
     const product = new Product({
         id: req.body.id,
@@ -77,6 +90,7 @@ app.post('/addproduct', async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 });
+
 
 app.listen(port, (error) => {
     if (!error) {
