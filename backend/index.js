@@ -256,7 +256,6 @@ app.listen(port, (error) => {
     }
 });
 
-
 app.get("/",(req,res)=>{
     res.send("Express app is running")
 })
