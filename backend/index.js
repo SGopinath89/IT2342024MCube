@@ -43,7 +43,7 @@ const Product = mongoose.model("Product", {
         required: true,
     },
     image: {
-        type: String, // Assuming image URL will be stored
+        type: String,
         required: true,
     },
     category: {
