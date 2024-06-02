@@ -33,30 +33,33 @@ const ShopContextProvider = (props) => {
     }, []);
 
     const addToCart = (itemId) => {
+        if (!localStorage.getItem('auth-token')) {
+            alert("You must login to purchase");
+            return; // Return early if user is not logged in
+        }
+    
         setCartItems((prev) => ({
             ...prev,
             [itemId]: (prev[itemId] || 0) + 1
         }));
-
+    
         localStorage.setItem('cartItems', JSON.stringify({
             ...cartItems,
             [itemId]: (cartItems[itemId] || 0) + 1
         }));
-
-        if (localStorage.getItem('auth-token')) {
-            fetch('http://localhost:4000/addtocart', {
-                method: "POST",
-                headers: {
-                    'auth-token': `${localStorage.getItem('auth-token')}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ "itemId": itemId }),
-            })
-            .then((response) => response.json())
-            .then((data) => console.log(data))
-            .catch((error) => console.error('Failed to add to cart:', error));
-        }
-    }
+    
+        fetch('http://localhost:4000/addtocart', {
+            method: "POST",
+            headers: {
+                'auth-token': `${localStorage.getItem('auth-token')}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ "itemId": itemId }),
+        })
+        .then((response) => response.json())
+        .then((data) => console.log(data))
+        .catch((error) => console.error('Failed to add to cart:', error));
+    };
 
     const removeFromCart = (itemId) => {
         setCartItems((prev) => ({
@@ -121,7 +124,7 @@ const ShopContextProvider = (props) => {
         cartItems, 
         addToCart, 
         removeFromCart, 
-        clearCart // Include clearCart in the context value
+        clearCart
     };
 
     return (

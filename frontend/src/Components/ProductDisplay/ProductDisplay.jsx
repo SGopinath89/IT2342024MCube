@@ -4,8 +4,7 @@ import star_icon from '../Assets/star_icon.png';
 import star_dull_icon from '../Assets/star_dull_icon.png';
 import { ShopContext } from '../../Context/ShopContext';
 
-const ProductDisplay = (props) => {
-    const { product } = props;
+const ProductDisplay = ({ product, category }) => {
     const { addToCart } = useContext(ShopContext);
 
     return (
@@ -49,8 +48,8 @@ const ProductDisplay = (props) => {
                         <div>XXL</div>
                     </div>
                     <button onClick={() => addToCart(product.id)}>ADD TO CART</button>
-                    <p className='productdisplay-right-category'><span>Category :</span>Women, T-Shirt, Crop Top</p>
-                    <p className='productdisplay-right-category'><span>Tags :</span>Modern, Latest</p>
+                    <p className='productdisplay-right-category'><span>Category :</span> {product.category}</p>
+                    <p className='productdisplay-right-category'><span>Tags :</span> Modern, Latest</p>
                 </div>
             </div>
         </div>

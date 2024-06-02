@@ -40,6 +40,7 @@ const Product = mongoose.model("Product", {
     name: String,
     image: String,
     category: String,
+    category: String,
     new_price: Number,
     old_price: Number,
     date: { type: Date, default: Date.now },
@@ -70,6 +71,18 @@ app.get('/allproducts', async (req, res) => {
     let products = await Product.find({});
     res.send(products);
 });
+
+// Get products by category
+app.get('/products/:category', async (req, res) => {
+    const category = req.params.category;
+    try {
+        let products = await Product.find({ category: category });
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+});
+
 
 // User Model
 const Users = mongoose.model('Users', {
