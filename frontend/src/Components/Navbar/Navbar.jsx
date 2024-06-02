@@ -7,7 +7,21 @@ import { ShopContext } from '../../Context/ShopContext';
 
 const Navbar = () => {
   const [menu, setMenu] = useState("Shop");
-  const { getTotalCartItems } = useContext(ShopContext);
+  const { getTotalCartItems, clearCart } = useContext(ShopContext); // Import clearCart function from ShopContext
+
+  const handleLogout = () => {
+    // Clear user authentication token
+    localStorage.removeItem('auth-token');
+
+    // Clear cart data from local storage
+    localStorage.removeItem('cartItems');
+
+    // Clear the cart in the context
+    clearCart();
+
+    // Redirect to the login page or any other page
+    window.location.replace('/login');
+  };
 
   return (
     <div className="navbar">
@@ -34,7 +48,7 @@ const Navbar = () => {
       </ul>
       <div className="nav-login-cart">
         {localStorage.getItem('auth-token') ? (
-          <button onClick={() => { localStorage.removeItem('auth-token'); window.location.replace('/'); }}>Logout</button>
+          <button onClick={handleLogout}>Logout</button> // Use handleLogout function for logout
         ) : (
           <Link to='/login'><button>Login</button></Link>
         )}

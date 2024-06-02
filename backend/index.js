@@ -146,10 +146,19 @@ app.post('/addtocart', fetchuser, async (req, res) => {
 
 // Remove from cart
 app.post('/removefromcart', fetchuser, async (req, res) => {
-    let userData = await Users.findOne({ _id: req.user.id });
-    userData.cartData[req.body.itemId] -= 1;
-    await Users.findOneAndUpdate({ _id: req.user.id }, { cartData: userData.cartData });
-    res.send("Removed");
+    try {
+        let userData = await Users.findOne({ _id: req.user.id });
+        if (userData.cartData[req.body.itemId] > 0) {
+            userData.cartData[req.body.itemId] -= 1;
+            await Users.findOneAndUpdate({ _id: req.user.id }, { cartData: userData.cartData });
+            res.json({ success: true, message: 'Item removed from cart' });
+        } else {
+            res.json({ success: false, message: 'Item quantity is already zero' });
+        }
+    } catch (error) {
+        console.error('Error removing item from cart:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
 });
 
 // Get cart data
