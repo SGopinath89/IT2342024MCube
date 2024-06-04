@@ -1,26 +1,55 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 import logo from '../Assets/logo.png';
 import cartIcon from '../Assets/cart_icon.png';
+import UserProfile from '../UserProfile/UserProfile';
 import { ShopContext } from '../../Context/ShopContext';
 
 const Navbar = () => {
   const [menu, setMenu] = useState("Shop");
-  const { getTotalCartItems, clearCart } = useContext(ShopContext); // Import clearCart function from ShopContext
+  const [user, setUser] = useState({ name: '', email: '' });
+  const { getTotalCartItems, clearCart } = useContext(ShopContext);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem('auth-token');
+      if (token) {
+        const response = await fetch('http://localhost:4000/getuser', {
+          headers: {
+            'auth-token': token,
+          },
+        });
+        const data = await response.json();
+        setUser({ name: data.name, email: data.email });
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleLogout = () => {
-    // Clear user authentication token
     localStorage.removeItem('auth-token');
-
-    // Clear cart data from local storage
     localStorage.removeItem('cartItems');
-
-    // Clear the cart in the context
     clearCart();
-
-    // Redirect to the login page or any other page
     window.location.replace('/login');
+  };
+
+  const handleChangePassword = async (oldPassword, newPassword) => {
+    const response = await fetch('http://localhost:4000/changepassword', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('auth-token'),
+      },
+      body: JSON.stringify({ oldPassword, newPassword }),
+    });
+    const result = await response.json();
+    if (result.success) {
+      alert('Password changed successfully');
+    } else {
+      alert('Error changing password: ' + result.message);
+    }
   };
 
   return (
@@ -47,15 +76,18 @@ const Navbar = () => {
         </li>
       </ul>
       <div className="nav-login-cart">
-        {localStorage.getItem('auth-token') ? (
-          <button onClick={handleLogout}>Logout</button> // Use handleLogout function for logout
-        ) : (
-          <Link to='/login'><button>Login</button></Link>
-        )}
         <Link to='/cart'>
           <img src={cartIcon} alt="Cart" />
         </Link>
         <div className='nav-cart-count'>{getTotalCartItems()}</div>
+        {localStorage.getItem('auth-token') ? (
+          <>
+            <UserProfile user={user} onChangePassword={handleChangePassword} />
+            <button onClick={handleLogout}>Logout</button>
+          </>
+        ) : (
+          <Link to='/login'><button>Login</button></Link>
+        )}
       </div>
     </div>
   );

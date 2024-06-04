@@ -4,7 +4,7 @@ import star_icon from '../Assets/star_icon.png';
 import star_dull_icon from '../Assets/star_dull_icon.png';
 import { ShopContext } from '../../Context/ShopContext';
 
-const ProductDisplay = ({ product, category }) => {
+const ProductDisplay = ({ product}) => {
     const { addToCart } = useContext(ShopContext);
 
     return (
@@ -35,8 +35,7 @@ const ProductDisplay = ({ product, category }) => {
                     <div className='productdisplay-right-price-new'>${product.new_price}</div>
                 </div>
                 <div className="productdisplay-right-description">
-                    Soft cotton, vibrant color, and classic style define this T-shirt. Perfect for casual wear, it pairs
-                    effortlessly with any bottoms for a comfortable and stylish look.
+                   {product.description}
                 </div>
                 <div className="productdisplay-right-size">
                     <h1>Select Size</h1>

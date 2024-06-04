@@ -3,14 +3,17 @@ import './AddProducts.css';
 import upload_area from '../../assets/upload_area.svg';
 
 const AddProducts = () => {
-    const [image, setImage] = useState(null);
-    const [productDetails, setProductDetails] = useState({
+    const initialProductDetails = {
         name: "",
         image: "",
         category: "women",
+        description: "",
         new_price: "",
         old_price: ""
-    });
+    };
+
+    const [image, setImage] = useState(null);
+    const [productDetails, setProductDetails] = useState(initialProductDetails);
 
     const imageHandler = (e) => {
         setImage(e.target.files[0]);
@@ -62,7 +65,13 @@ const AddProducts = () => {
 
                 const addProductData = await addProductResponse.json();
 
-                addProductData.success ? alert("Product Added") : alert("Failed");
+                if (addProductData.success) {
+                    alert("Product Added");
+                    setProductDetails(initialProductDetails); // Reset product details
+                    setImage(null); // Reset image
+                } else {
+                    alert("Failed");
+                }
             } else {
                 alert("Image upload failed");
             }
@@ -105,6 +114,16 @@ const AddProducts = () => {
                         placeholder='Type here'
                     />
                 </div>
+            </div>
+            <div className="addproduct-item-description">
+                <p>Description</p>
+                <input
+                    value={productDetails.description}
+                    onChange={changeHandler}
+                    type="text"
+                    name="description"
+                    placeholder='Type here'
+                />
             </div>
             <div className="addproduct-itemfield">
                 <p>Product Category</p>

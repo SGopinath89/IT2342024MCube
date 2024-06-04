@@ -3,6 +3,8 @@ import './Hero.css';
 import hand_icon from '../Assets/hand_icon.png';
 import arrow from '../Assets/arrow.png';
 import hero_image from '../Assets/hero_image.png';
+import hero_image1 from '../Assets/hero_image1.png';
+import hero_image2 from '../Assets/hero_image2.png';
 
 const Hero = () => {
   return (
@@ -23,7 +25,9 @@ const Hero = () => {
         </div>
       </div>
       <div className='hero-right'>
-        <img src={hero_image} alt="" />
+        <img src={hero_image} className='hero-right-1' alt="" />
+        <img src={hero_image1} className='hero-right-2' alt="" />
+        <img src={hero_image2} className='hero-right-3' alt="" />
       </div>
     </div>
   );

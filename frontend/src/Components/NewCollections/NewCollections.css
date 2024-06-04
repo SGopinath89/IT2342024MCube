@@ -3,7 +3,8 @@
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    min-height: 60vh; /* Adjust the height as needed */
+    min-height: 60vh;
+    margin-top: 100px;
     margin-bottom: 100px;
 }
 
@@ -25,4 +26,10 @@
     grid-template-columns: 1fr 1fr 1fr 1fr;
     margin-top: 50px;
     gap: 30px;
+}
+
+.collections img {
+    width: 360px; 
+    height: 470px;
+
 }

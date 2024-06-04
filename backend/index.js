@@ -40,7 +40,7 @@ const Product = mongoose.model("Product", {
     name: String,
     image: String,
     category: String,
-    category: String,
+    description: String,
     new_price: Number,
     old_price: Number,
     date: { type: Date, default: Date.now },
@@ -84,6 +84,8 @@ app.get('/products/:category', async (req, res) => {
 });
 
 
+
+
 // User Model
 const Users = mongoose.model('Users', {
     name: String,
@@ -95,17 +97,24 @@ const Users = mongoose.model('Users', {
 
 // Register the user
 app.post('/signup', async (req, res) => {
-    let check = await Users.findOne({ email: req.body.email });
+    const { name, email, password } = req.body;
+
+    // Check if the email already exists
+    let check = await Users.findOne({ email });
     if (check) {
         return res.status(400).json({ success: false, errors: "Existing user found" });
     }
 
-    let cart = Array(300).fill(0);
-    const user = new Users({ ...req.body, cartData: cart });
-    await user.save();
-
-    const token = jwt.sign({ user: { id: user.id }}, 'secret_mcube');
-    res.json({ success: true, token });
+    // Create a new user with username, email, and password
+    const newUser = new Users({ name, email, password });
+    
+    try {
+        await newUser.save();
+        const token = jwt.sign({ user: { id: newUser.id }}, 'secret_mcube');
+        res.json({ success: true, token });
+    } catch (error) {
+        res.status(500).json({ success: false, errors: "Internal server error" });
+    }
 });
 
 // User login
@@ -149,6 +158,16 @@ const fetchuser = async (req, res, next) => {
     }
 };
 
+app.get('/getuser', fetchuser, async (req, res) => {
+    try {
+        const user = await Users.findById(req.user.id).select('-password');
+        res.json(user);
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
 // Add to cart route
 app.post('/addtocart', fetchuser, async (req, res) => {
     let userData = await Users.findOne({ _id: req.user.id });
@@ -178,6 +197,29 @@ app.post('/removefromcart', fetchuser, async (req, res) => {
 app.post('/getcart', fetchuser, async (req, res) => {
     let userData = await Users.findOne({ _id: req.user.id });
     res.json(userData.cartData);
+});
+
+// Route to change password
+app.post('/changepassword', fetchuser, async (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+
+    try {
+        const user = await Users.findOne({ _id: req.user.id });
+
+        // Check if the old password matches
+        if (user.password !== oldPassword) {
+            return res.status(400).json({ success: false, message: 'Old password is incorrect' });
+        }
+
+        // Update to new password
+        user.password = newPassword;
+        await user.save();
+
+        res.json({ success: true, message: 'Password changed successfully' });
+    } catch (error) {
+        console.error('Error changing password:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
 });
 
 app.listen(port, (error) => {
