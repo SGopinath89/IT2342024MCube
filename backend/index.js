@@ -12,7 +12,7 @@ const port = 4000;
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect("mongodb+srv://mcube:mcube123@cluster0.ojhuygi.mongodb.net/mcube?retryWrites=true&w=majority&appName=Cluster0", {
+mongoose.connect("mongodb+srv://your uri", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
