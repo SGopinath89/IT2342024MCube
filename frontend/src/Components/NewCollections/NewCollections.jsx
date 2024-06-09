@@ -8,7 +8,7 @@ const NewCollections = () => {
   useEffect(() => {
     const fetchNewCollections = async () => {
       try {
-        const response = await fetch('http://localhost:4000/newcollections');
+        const response = await fetch('http://localhost:4000/product/newcollections');
         if (!response.ok) {
           throw new Error('Failed to fetch new collections');
         }

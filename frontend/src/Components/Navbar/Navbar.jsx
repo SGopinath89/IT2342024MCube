@@ -15,7 +15,7 @@ const Navbar = () => {
     const fetchUserData = async () => {
       const token = localStorage.getItem('auth-token');
       if (token) {
-        const response = await fetch('http://localhost:4000/getuser', {
+        const response = await fetch('http://localhost:4000/user/getuser', {
           headers: {
             'auth-token': token,
           },
@@ -36,7 +36,7 @@ const Navbar = () => {
   };
 
   const handleChangePassword = async (oldPassword, newPassword) => {
-    const response = await fetch('http://localhost:4000/changepassword', {
+    const response = await fetch('http://localhost:4000/auth/changepassword', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

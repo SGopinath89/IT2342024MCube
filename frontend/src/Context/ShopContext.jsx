@@ -12,26 +12,28 @@ const ShopContextProvider = (props) => {
         if (storedCartItems) {
             setCartItems(JSON.parse(storedCartItems));
         } else {
-            // Fetch cart data from the server if it doesn't exist in local storage
-            fetch('http://localhost:4000/getcart', {
-                method: "POST",
-                headers: {
-                    'auth-token': `${localStorage.getItem('auth-token')}`,
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then((response) => response.json())
-            .then((data) => setCartItems(data))
-            .catch((error) => console.error('Failed to fetch cart data:', error));
+            const authToken = localStorage.getItem('auth-token');
+            if (authToken) {
+                // Fetch cart data from the server if it doesn't exist in local storage
+                fetch('http://localhost:4000/user/getcart', {
+                    method: "POST",
+                    headers: {
+                        'auth-token': authToken,
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then((response) => response.json())
+                .then((data) => setCartItems(data))
+                .catch((error) => console.error('Failed to fetch cart data:', error));
+            }
         }
-    
+        
         // Fetch products from the server
-        fetch('http://localhost:4000/allproducts')
+        fetch('http://localhost:4000/product/allproducts')
             .then((Response) => Response.json())
             .then((data) => setAll_Product(data))
             .catch((error) => console.error('Failed to fetch products:', error));
     }, []);
-
     const addToCart = (itemId) => {
         if (!localStorage.getItem('auth-token')) {
             alert("You must login to purchase");
@@ -48,7 +50,7 @@ const ShopContextProvider = (props) => {
             [itemId]: (cartItems[itemId] || 0) + 1
         }));
     
-        fetch('http://localhost:4000/addtocart', {
+        fetch('http://localhost:4000/user/addtocart', {
             method: "POST",
             headers: {
                 'auth-token': `${localStorage.getItem('auth-token')}`,
@@ -73,7 +75,7 @@ const ShopContextProvider = (props) => {
         }));
 
         if (localStorage.getItem('auth-token')) {
-            fetch('http://localhost:4000/removefromcart', {
+            fetch('http://localhost:4000/user/removefromcart', {
                 method: "POST",
                 headers: {
                     'auth-token': `${localStorage.getItem('auth-token')}`,

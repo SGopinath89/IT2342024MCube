@@ -1,14 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './UserProfile.css';
 import UserProfile_icon from '../Assets/UserProfile_icon.png';
 
-const UserProfile = ({ user, onChangePassword }) => {
+const UserProfile = ({ onChangePassword }) => {
     const [showProfile, setShowProfile] = useState(false);
     const [showChangePassword, setShowChangePassword] = useState(false);
     const [passwords, setPasswords] = useState({
         oldPassword: '',
         newPassword: ''
     });
+    const [user, setUser] = useState({}); // State to store user data
+
+    useEffect(() => {
+        // Fetch user data when the component mounts
+        const fetchUserData = async () => {
+            try {
+                // Perform the fetch request to get the user data
+                const response = await fetch('http://localhost:4000/user/getuser', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'auth-token': localStorage.getItem('auth-token') // Assuming the token is stored in localStorage
+                    }
+                });
+                if (response.ok) {
+                    const userData = await response.json();
+                    setUser(userData);
+                } else {
+                    console.error('Failed to fetch user data');
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        fetchUserData();
+    }, []);
 
     const toggleProfile = () => {
         if (showProfile) {
@@ -41,8 +68,8 @@ const UserProfile = ({ user, onChangePassword }) => {
             />
             {showProfile && (
                 <div className="profile-dropdown">
-                    <p>Name: {user.name}</p>
-                    <p>Email: {user.email}</p>
+                    <p>Name: <b>{user.name}</b></p>
+                    <p>Email: <b>{user.email}</b></p>
                     {!showChangePassword && (
                         <button className='change-password-btn' onClick={() => setShowChangePassword(true)}>Change Password</button>
                     )}
