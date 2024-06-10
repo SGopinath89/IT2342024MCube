@@ -72,6 +72,20 @@ router.get('/products/:category', async (req, res) => {
     }
 });
 
+// Update product
+router.post('/updateproduct', async (req, res) => {
+    try {
+        const updatedProduct = await Product.findOneAndUpdate(
+            { id: req.body.id },
+            { ...req.body },
+            { new: true }
+        );
+        res.json({ success: true, product: updatedProduct });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
 // Get new collections
 router.get('/newcollections', async (req, res) => {
     try {
