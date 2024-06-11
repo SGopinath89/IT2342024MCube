@@ -37,7 +37,7 @@ const ShopContextProvider = (props) => {
     const addToCart = (itemId) => {
         if (!localStorage.getItem('auth-token')) {
             alert("You must login to purchase");
-            return; // Return early if user is not logged in
+            return; 
         }
     
         setCartItems((prev) => ({
