@@ -15,6 +15,7 @@ const ListProduct = () => {
     description: '',
     image: ''
   });
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchInfo = async (category = 'all') => {
     try {
@@ -34,8 +35,11 @@ const ListProduct = () => {
   };
 
   const removeProduct = async (id) => {
+    const confirmation = window.confirm("Are you sure you want to delete this product?");
+    if (!confirmation) return;
+  
     try {
-      const response = await fetch('http://localhost:4000/removeproduct', {
+      const response = await fetch('http://localhost:4000/product/removeproduct', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +62,15 @@ const ListProduct = () => {
 
   const editProduct = (product) => {
     setEditingProduct(product.id);
-    setFormData({ ...product });
+    setFormData({
+      id: product.id,
+      name: product.name,
+      old_price: product.old_price,
+      new_price: product.new_price,
+      category: product.category,
+      description: product.description,
+      image: product.image
+    });
   };
 
   const updateProduct = async (e) => {
@@ -90,6 +102,14 @@ const ListProduct = () => {
     fetchInfo(selectedCategory);
   }, [selectedCategory]);
 
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredProducts = allProducts.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className='list-product'>
       <h1>All Products List</h1>
@@ -106,7 +126,18 @@ const ListProduct = () => {
           <option value="women">Women</option>
           <option value="kid">Kids</option>
         </select>
+        <label className='search' htmlFor="search">Search Product : </label>
+        <input
+        className='category-selector'
+          type="text"
+          id="search"
+          value={searchTerm}
+          onChange={handleSearch}
+         />
       </div>
+      
+        
+  
       <div className="listproduct-format-main">
         <p>Products</p>
         <p>Title</p>
@@ -118,7 +149,7 @@ const ListProduct = () => {
       </div>
       <div className="listproduct-allproducts">
         <hr />
-        {allProducts.map((product, index) => (
+        {filteredProducts.map((product, index) => (
           <div key={index} className="listproduct-format-main listproduct-format">
             <img src={product.image} alt="" className="listproduct-product-icon" />
             <p>{product.name}</p>

@@ -72,6 +72,10 @@
     z-index: 1000;
 }
 
+.search {
+    margin-left: 60px;
+}
+
 .edit-product-form {
     background: white;
     padding: 20px;

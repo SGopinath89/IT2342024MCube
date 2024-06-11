@@ -3,11 +3,12 @@ import './Navbar.css'
 import navlogo from '../../assets/nav-logo.svg'
 import navProfile from '../../assets/nav-profile.svg'
 
-const Navbar = () => {
+const Navbar = ({ isLoggedIn, handleLogout }) => {
   return (
     <div className='navbar'>
         <img className='nav-logo' src={navlogo} alt="" />
-        <img src={navProfile} className='nav-profile' alt="" />
+        
+        {isLoggedIn && <button className='logout' onClick={handleLogout}>Logout</button>}
     </div>
   )
 }

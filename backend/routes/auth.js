@@ -5,6 +5,7 @@ const { fetchuser } = require('../middleware/fetchuser');
 
 const router = express.Router();
 
+//User Registration
 router.post('/signup', async (req, res) => {
     const { name, email, password } = req.body;
 

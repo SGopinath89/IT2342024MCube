@@ -3,6 +3,7 @@ import './Sidebar.css'
 import { Link } from "react-router-dom"
 import add_product_icon from '../../assets/Product_Cart.svg'
 import list_product_icon from '../../assets/Product_list_icon.svg'
+import list_user_icon from '../../assets/list_user_icon.png'
 
 const Sidebar = () => {
   return (
