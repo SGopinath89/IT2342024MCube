@@ -2,20 +2,18 @@ import React, { useState, useEffect } from 'react';
 import './UserProfile.css';
 import UserProfile_icon from '../Assets/UserProfile_icon.png';
 
-const UserProfile = ({ onChangePassword }) => {
+const UserProfile = ({ onChangePassword, onDeleteAccount }) => {
     const [showProfile, setShowProfile] = useState(false);
     const [showChangePassword, setShowChangePassword] = useState(false);
     const [passwords, setPasswords] = useState({
         oldPassword: '',
         newPassword: ''
     });
-    const [user, setUser] = useState({}); // State to store user data
+    const [user, setUser] = useState({}); 
 
     useEffect(() => {
-        // Fetch user data when the component mounts
         const fetchUserData = async () => {
             try {
-                // Perform the fetch request to get the user data
                 const response = await fetch('http://localhost:4000/user/getuser', {
                     method: 'GET',
                     headers: {
@@ -58,6 +56,14 @@ const UserProfile = ({ onChangePassword }) => {
         setShowChangePassword(false);
     };
 
+    const handleDeleteAccount = async () => {
+        if (window.confirm("Are you sure you want to delete your account?")) {
+            if (typeof onDeleteAccount === 'function') {
+                await onDeleteAccount();
+            }
+        }
+    };
+
     return (
         <div className="user-profile">
             <img
@@ -71,7 +77,10 @@ const UserProfile = ({ onChangePassword }) => {
                     <p>Name: <b>{user.name}</b></p>
                     <p>Email: <b>{user.email}</b></p>
                     {!showChangePassword && (
-                        <button className='change-password-btn' onClick={() => setShowChangePassword(true)}>Change Password</button>
+                        <>
+                            <button className='change-password-btn' onClick={() => setShowChangePassword(true)}>Change Password</button>
+                            <button className='delete-account-btn' onClick={handleDeleteAccount}>Delete Account</button>
+                        </>
                     )}
                     {showChangePassword && (
                         <div className="change-password-form">

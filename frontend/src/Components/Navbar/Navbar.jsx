@@ -37,7 +37,7 @@ const Navbar = () => {
 
   const handleChangePassword = async (oldPassword, newPassword) => {
     const response = await fetch('http://localhost:4000/auth/changepassword', {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'auth-token': localStorage.getItem('auth-token'),
@@ -49,6 +49,23 @@ const Navbar = () => {
       alert('Password changed successfully');
     } else {
       alert('Error changing password: ' + result.message);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const response = await fetch('http://localhost:4000/auth/deleteaccount', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('auth-token'),
+      },
+    });
+    const result = await response.json();
+    if (result.success) {
+      alert('Account deleted successfully');
+      handleLogout();
+    } else {
+      alert('Error deleting account: ' + result.message);
     }
   };
 
@@ -82,7 +99,7 @@ const Navbar = () => {
         <div className='nav-cart-count'>{getTotalCartItems()}</div>
         {localStorage.getItem('auth-token') ? (
           <>
-            <UserProfile user={user} onChangePassword={handleChangePassword} />
+            <UserProfile user={user} onChangePassword={handleChangePassword} onDeleteAccount={handleDeleteAccount} />
             <button onClick={handleLogout}>Logout</button>
           </>
         ) : (
