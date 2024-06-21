@@ -6,6 +6,7 @@ const routes = require('./routes/app');
 const productRoutes = require('./routes/product');
 const userRoutes = require('./routes/user');
 const adminRoutes = require('./routes/admin'); 
+const orderRoutes = require('./routes/order');
 
 const app = express();
 const port = 4000;
@@ -23,6 +24,7 @@ app.use('/', routes);
 app.use('/product', productRoutes);
 app.use('/user', userRoutes);
 app.use('/admin', adminRoutes);
+app.use('/order', orderRoutes);
 
 app.listen(port, (error) => {
     if (!error) {

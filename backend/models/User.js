@@ -4,7 +4,14 @@ const UserSchema = new mongoose.Schema({
     name: String,
     email: String,
     password: String,
-    cartData: Object,
+    cartData: {
+        type: Object,
+        default: {}
+    },
+    orders: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Order'
+    }],
     date: { type: Date, default: Date.now },
 });
 

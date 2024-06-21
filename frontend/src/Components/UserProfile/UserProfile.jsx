@@ -9,7 +9,7 @@ const UserProfile = ({ onChangePassword, onDeleteAccount }) => {
         oldPassword: '',
         newPassword: ''
     });
-    const [user, setUser] = useState({}); 
+    const [user, setUser] = useState({});
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -18,7 +18,7 @@ const UserProfile = ({ onChangePassword, onDeleteAccount }) => {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'auth-token': localStorage.getItem('auth-token') // Assuming the token is stored in localStorage
+                        'auth-token': localStorage.getItem('auth-token')
                     }
                 });
                 if (response.ok) {
@@ -37,7 +37,6 @@ const UserProfile = ({ onChangePassword, onDeleteAccount }) => {
 
     const toggleProfile = () => {
         if (showProfile) {
-            // Reset the change password state when closing the profile dropdown
             setShowChangePassword(false);
             setPasswords({ oldPassword: '', newPassword: '' });
         }

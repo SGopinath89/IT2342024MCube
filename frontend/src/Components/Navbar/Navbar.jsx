@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import logo from '../Assets/logo.png';
 import cartIcon from '../Assets/cart_icon.png';
@@ -10,6 +10,7 @@ const Navbar = () => {
   const [menu, setMenu] = useState("Shop");
   const [user, setUser] = useState({ name: '', email: '' });
   const { getTotalCartItems, clearCart } = useContext(ShopContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -101,6 +102,9 @@ const Navbar = () => {
           <>
             <UserProfile user={user} onChangePassword={handleChangePassword} onDeleteAccount={handleDeleteAccount} />
             <button onClick={handleLogout}>Logout</button>
+            <div className="nav-user-orders">
+              <Link to='/orders'>Orders</Link>
+            </div>
           </>
         ) : (
           <Link to='/login'><button>Login</button></Link>

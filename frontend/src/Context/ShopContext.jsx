@@ -2,10 +2,10 @@ import React, { createContext, useState, useEffect } from "react";
 
 export const ShopContext = createContext(null);
 
-
 const ShopContextProvider = (props) => {
     const [all_product, setAll_Product] = useState([]);
     const [cartItems, setCartItems] = useState({});
+    const [orders, setOrders] = useState([]);
 
     useEffect(() => {
         const storedCartItems = localStorage.getItem('cartItems');
@@ -34,6 +34,7 @@ const ShopContextProvider = (props) => {
             .then((data) => setAll_Product(data))
             .catch((error) => console.error('Failed to fetch products:', error));
     }, []);
+
     const addToCart = (itemId) => {
         if (!localStorage.getItem('auth-token')) {
             alert("You must login to purchase");
@@ -115,18 +116,78 @@ const ShopContextProvider = (props) => {
         return totalItem;
     }
 
-    useEffect(() => {
-        console.log(cartItems);
-    }, [cartItems]);
+    const createOrder = () => {
+        if (!localStorage.getItem('auth-token')) {
+            alert("You must login to place an order");
+            return; 
+        }
+    
+        const orderData = {
+            order_id: `ORD${Date.now()}`, // Example order ID
+            product_ids: Object.keys(cartItems).map(id => parseInt(id)), // Assuming product IDs are integers
+        };
+    
+        fetch('http://localhost:4000/order/createorder', {
+            method: "POST",
+            headers: {
+                'auth-token': localStorage.getItem('auth-token'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderData),
+        })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((data) => {
+            if (data.success) {
+                clearCart(); // Clear the cart after successful order creation
+                console.log('Order created successfully:', data.order);
+                fetchUserOrders(); // Fetch updated orders
+            } else {
+                console.error('Failed to create order:', data.message);
+            }
+        })
+        .catch((error) => console.error('Failed to create order:', error));
+    };
 
-    const contextValue = { 
-        getTotalCartItems, 
-        getTotalCartAmount, 
-        all_product, 
-        cartItems, 
-        addToCart, 
-        removeFromCart, 
-        clearCart
+    const fetchUserOrders = () => {
+        if (!localStorage.getItem('auth-token')) {
+            return;
+        }
+
+        fetch('http://localhost:4000/order/userorders', {
+            method: "GET",
+            headers: {
+                'auth-token': localStorage.getItem('auth-token'),
+                'Content-Type': 'application/json',
+            }
+        })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((data) => {
+            setOrders(data); // Assuming setOrders is a state setter function
+        })
+        .catch((error) => console.error('Failed to fetch user orders:', error));
+    };
+
+    const contextValue = {
+        all_product,
+        cartItems,
+        addToCart,
+        removeFromCart,
+        getTotalCartAmount,
+        getTotalCartItems,
+        createOrder, // Add the createOrder function to the context
+        clearCart, // Add the clearCart function to the context
+        orders, // Add orders to the context
+        fetchUserOrders // Add fetchUserOrders to the context
     };
 
     return (
@@ -134,6 +195,6 @@ const ShopContextProvider = (props) => {
             {props.children}
         </ShopContext.Provider>
     );
-};
+}
 
 export default ShopContextProvider;

@@ -1,10 +1,12 @@
+//CartItems.jsx
+
 import React, { useContext } from 'react';
 import './CartItems.css';
 import { ShopContext } from '../../Context/ShopContext';
 import remove_icon from '../Assets/cart_cross_icon.png';
 
 const CartItems = () => {
-    const { all_product, cartItems, removeFromCart } = useContext(ShopContext);
+    const { all_product, cartItems, removeFromCart, createOrder } = useContext(ShopContext);
 
     const calculateSubtotal = () => {
         return all_product.reduce((sum, product) => {
@@ -15,6 +17,16 @@ const CartItems = () => {
     const subtotal = calculateSubtotal();
     const shippingFee = 0; // Assuming shipping is free
     const total = (parseFloat(subtotal) + shippingFee).toFixed(2);
+
+    const handleProceedToCheckout = () => {
+        if (Object.keys(cartItems).length === 0) {
+            alert('Your cart is empty. Please add items before proceeding.');
+            return;
+        }
+
+        // Call createOrder function from context to create an order
+        createOrder();
+    };
 
     return (
         <div className='cartitems'>
@@ -64,7 +76,7 @@ const CartItems = () => {
                             <h3>${total}</h3>
                         </div>
                     </div>
-                    <button>Proceed To Checkout</button>
+                    <button onClick={handleProceedToCheckout}>Proceed To Checkout</button>
                 </div>
                 <div className="cartitems-promocode">
                     <p>If you have a promo code, enter it here</p>
