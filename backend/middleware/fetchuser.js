@@ -1,3 +1,5 @@
+//middleware for fetch user
+
 const jwt = require('jsonwebtoken');
 
 const fetchuser = async (req, res, next) => {

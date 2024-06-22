@@ -22,7 +22,9 @@ router.post('/addtocart', fetchuser, async (req, res) => {
         let userData = await User.findOne({ _id: req.user.id });
         userData.cartData[req.body.itemId] = (userData.cartData[req.body.itemId] || 0) + 1;
         await User.findOneAndUpdate({ _id: req.user.id }, { cartData: userData.cartData });
-        res.send("Added");
+        
+        // Send a JSON response indicating success
+        res.json({ success: true, message: 'Item added to cart successfully' });
     } catch (error) {
         console.error('Error adding item to cart:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });

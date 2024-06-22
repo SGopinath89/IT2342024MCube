@@ -16,7 +16,7 @@ app.use(cors());
 
 mongoose.connect("mongodb+srv://mcube:mcube123@cluster0.ojhuygi.mongodb.net/mcube?retryWrites=true&w=majority&appName=Cluster0", {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
+    useUnifiedTopology: true
 });
 
 app.use('/images', express.static(path.join(__dirname, 'upload/images')));

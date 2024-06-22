@@ -8,10 +8,7 @@ const UserSchema = new mongoose.Schema({
         type: Object,
         default: {}
     },
-    orders: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Order'
-    }],
+    
     date: { type: Date, default: Date.now },
 });
 

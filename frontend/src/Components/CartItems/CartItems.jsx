@@ -1,12 +1,17 @@
-//CartItems.jsx
-
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import './CartItems.css';
 import { ShopContext } from '../../Context/ShopContext';
 import remove_icon from '../Assets/cart_cross_icon.png';
 
 const CartItems = () => {
-    const { all_product, cartItems, removeFromCart, createOrder } = useContext(ShopContext);
+    const { all_product, cartItems, removeFromCart, clearCart } = useContext(ShopContext);
+    const [showPopup, setShowPopup] = useState(false);
+    const [formData, setFormData] = useState({
+        items: '',
+        amount: '',
+        address: '',
+        hasPaymentDetails: false // New state for payment details
+    });
 
     const calculateSubtotal = () => {
         return all_product.reduce((sum, product) => {
@@ -24,8 +29,56 @@ const CartItems = () => {
             return;
         }
 
-        // Call createOrder function from context to create an order
-        createOrder();
+        setFormData({
+            items: JSON.stringify(cartItems),
+            amount: subtotal,
+            address: '',
+            hasPaymentDetails: false // Initialize as false
+        });
+
+        setShowPopup(true);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        const inputValue = type === 'checkbox' ? checked : value;
+
+        setFormData({ ...formData, [name]: inputValue });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const token = localStorage.getItem('auth-token'); // Retrieve JWT token from localStorage
+
+        const orderData = {
+            items: formData.items,
+            amount: parseFloat(formData.amount),
+            address: formData.address,
+            hasPaymentDetails: formData.hasPaymentDetails
+        };
+
+        try {
+            const response = await fetch('http://localhost:4000/order/createorder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'auth-token': token // Include JWT token in headers
+                },
+                body: JSON.stringify(orderData)
+            });
+
+            if (response.ok) {
+                alert("Order submitted successfully!");
+                setShowPopup(false);
+                clearCart(); // Clear the cart after successful order submission
+            } else {
+                alert("Failed to submit order.");
+            }
+        } catch (error) {
+            console.error("Error submitting order:", error);
+            alert("Error submitting order. Please try again.");
+        }
     };
 
     return (
@@ -86,6 +139,71 @@ const CartItems = () => {
                     </div>
                 </div>
             </div>
+
+            {showPopup && (
+                <div className="overlay">
+                    <div className="popup">
+                        <span className="close" onClick={() => setShowPopup(false)}>&times;</span>
+                        <h2>Shipping & Payment</h2>
+                        <form onSubmit={handleSubmit}>
+                            <label htmlFor="address">Delivery Address:</label>
+                            <textarea
+                                id="address"
+                                name="address"
+                                value={formData.address}
+                                onChange={handleInputChange}
+                                required
+                            /><br /><br />
+
+                            <h2>Payment Details</h2>
+                            <label htmlFor="cardNumber">Card Number:</label>
+                            <input
+                                type="text"
+                                id="cardNumber"
+                                name="cardNumber"
+                                value={formData.cardNumber}
+                                onChange={handleInputChange}
+                                pattern="\d{16}"
+                                required
+                            /><br /><br />
+
+                            <label htmlFor="expiryDate">Expiry Date (MM/YYYY):</label>
+                            <input
+                                type="text"
+                                id="expiryDate"
+                                name="expiryDate"
+                                value={formData.expiryDate}
+                                onChange={handleInputChange}
+                                pattern="^(0[1-9]|1[0-2])\/?([0-9]{4}|[0-9]{2})$"
+                                placeholder="MM/YYYY"
+                                required
+                            /><br /><br />
+
+                            <label htmlFor="cvv">CVV:</label>
+                            <input
+                                type="text"
+                                id="cvv"
+                                name="cvv"
+                                value={formData.cvv}
+                                onChange={handleInputChange}
+                                pattern="\d{3}"
+                                required
+                            /><br /><br />
+
+                            <label htmlFor="cardHolderName">Card Holder Name:</label>
+                            <input
+                                type="text"
+                                id="cardHolderName"
+                                name="cardHolderName"
+                                value={formData.cardHolderName}
+                                onChange={handleInputChange}
+                                required
+                            /><br /><br />
+                            <button type="submit">Submit Order</button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

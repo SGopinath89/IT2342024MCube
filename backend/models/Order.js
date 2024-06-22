@@ -1,29 +1,24 @@
-// Order.js
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+//order model
 
-const orderSchema = new Schema({
-    order_id: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    product_ids: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-        required: true
-    }],
-    user_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    date: {
-        type: Date,
-        default: Date.now
+const mongoose = require('mongoose');
+
+const orderSchema = new mongoose.Schema({
+    userId: { type: String, required: true },
+    items: { type: Array, required: true },
+    amount: { type: Number, required: true },
+    address: { type: Object, required: true },
+    date: { type: Date, default: Date.now },
+    status: { type: String, default: "Order Pending" },
+    payment: { type: Boolean, default: true }
+});
+
+orderSchema.pre('save', async function(next) {
+    if (this.isNew) {
+        const lastOrder = await Order.findOne().sort({ orderId: -1 });
+        this.orderId = lastOrder ? lastOrder.orderId + 1 : 1;
     }
-}, { collection: 'orders' });
+    next();
+});
 
 const Order = mongoose.model('Order', orderSchema);
-
 module.exports = Order;
