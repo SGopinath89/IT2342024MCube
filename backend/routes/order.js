@@ -37,6 +37,7 @@ router.get('/myorders', fetchuser, async (req, res) => {
   try {
       const userId = req.user.id;
       const orders = await Order.find({ userId: userId }).sort({ orderId: -1 });
+      console.log(orders);
       res.json({ success: true, data: orders });
   } catch (error) {
       console.log(error);
@@ -44,10 +45,21 @@ router.get('/myorders', fetchuser, async (req, res) => {
   }
 });
 
+router.get('/allorders', async (req, res) => {
+  try {
+    const orders = await Order.find().sort({ orderId: -1 });
+    res.json({ success: true, data: orders });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Error retrieving all orders" });
+  }
+});
+
 // Update order status
 router.post('/status', async (req, res) => {
   try {
     await Order.findByIdAndUpdate(req.body.orderId, { status: req.body.status });
+
     res.json({ success: true, message: "Status Updated" });
   } catch (error) {
     console.log(error);

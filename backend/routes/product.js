@@ -96,4 +96,16 @@ router.get('/newcollections', async (req, res) => {
     }
 });
 
+router.get('/allproducts/:id', async (req, res) => {
+
+    const id = req.params.id
+
+    try {
+        let products = await Product.find({id});
+        res.send(products);
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
 module.exports = router;

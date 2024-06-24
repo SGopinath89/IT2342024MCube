@@ -3,6 +3,7 @@ import './CartItems.css';
 import { ShopContext } from '../../Context/ShopContext';
 import remove_icon from '../Assets/cart_cross_icon.png';
 
+
 const CartItems = () => {
     const { all_product, cartItems, removeFromCart, clearCart } = useContext(ShopContext);
     const [showPopup, setShowPopup] = useState(false);
@@ -29,8 +30,10 @@ const CartItems = () => {
             return;
         }
 
+        console.log(cartItems);
+
         setFormData({
-            items: JSON.stringify(cartItems),
+            items: cartItems,
             amount: subtotal,
             address: '',
             hasPaymentDetails: false // Initialize as false
@@ -50,6 +53,8 @@ const CartItems = () => {
         e.preventDefault();
 
         const token = localStorage.getItem('auth-token'); // Retrieve JWT token from localStorage
+
+        console.log(formData);
 
         const orderData = {
             items: formData.items,
@@ -144,7 +149,7 @@ const CartItems = () => {
                 <div className="overlay">
                     <div className="popup">
                         <span className="close" onClick={() => setShowPopup(false)}>&times;</span>
-                        <h2>Shipping & Payment</h2>
+                        <h2>Shipping Details</h2>
                         <form onSubmit={handleSubmit}>
                             <label htmlFor="address">Delivery Address:</label>
                             <textarea
@@ -156,49 +161,63 @@ const CartItems = () => {
                             /><br /><br />
 
                             <h2>Payment Details</h2>
-                            <label htmlFor="cardNumber">Card Number:</label>
-                            <input
-                                type="text"
-                                id="cardNumber"
-                                name="cardNumber"
-                                value={formData.cardNumber}
-                                onChange={handleInputChange}
-                                pattern="\d{16}"
-                                required
-                            /><br /><br />
 
-                            <label htmlFor="expiryDate">Expiry Date (MM/YYYY):</label>
-                            <input
-                                type="text"
-                                id="expiryDate"
-                                name="expiryDate"
-                                value={formData.expiryDate}
-                                onChange={handleInputChange}
-                                pattern="^(0[1-9]|1[0-2])\/?([0-9]{4}|[0-9]{2})$"
-                                placeholder="MM/YYYY"
-                                required
-                            /><br /><br />
+                            <div className="input-container">
+                                <input
+                                    type="text"
+                                    id="cardNumber"
+                                    name="cardNumber"
+                                    value={formData.cardNumber}
+                                    onChange={handleInputChange}
+                                    maxLength={19}
+                                    required
+                                    placeholder="Card Number"
+                                />
+                            </div>
 
-                            <label htmlFor="cvv">CVV:</label>
-                            <input
-                                type="text"
-                                id="cvv"
-                                name="cvv"
-                                value={formData.cvv}
-                                onChange={handleInputChange}
-                                pattern="\d{3}"
-                                required
-                            /><br /><br />
 
-                            <label htmlFor="cardHolderName">Card Holder Name:</label>
-                            <input
-                                type="text"
-                                id="cardHolderName"
-                                name="cardHolderName"
-                                value={formData.cardHolderName}
-                                onChange={handleInputChange}
-                                required
-                            /><br /><br />
+                            <div className="input-container">
+                                <input
+                                    type="text"
+                                    id="expiryDate"
+                                    name="expiryDate"
+                                    value={formData.expiryDate}
+                                    onChange={handleInputChange}
+                                    pattern="^(0[1-9]|1[0-2])\/?([0-9]{4}|[0-9]{2})$"
+                                    placeholder="Expiry Date (MM/YYYY)"
+                                    required
+                                />
+
+                            </div>
+
+                            <div className="input-container">
+                                <input
+                                    type="text"
+                                    id="cvv"
+                                    name="cvv"
+                                    value={formData.cvv}
+                                    onChange={handleInputChange}
+                                    pattern="\d{3}"
+                                    required
+                                    placeholder="CVV"
+                                />
+
+                            </div>
+
+                            <div className="input-container">
+
+                                <input
+                                    type="text"
+                                    id="cardHolderName"
+                                    name="cardHolderName"
+                                    value={formData.cardHolderName}
+                                    onChange={handleInputChange}
+                                    required
+                                    placeholder="Card Holder Name"
+                                />
+
+                            </div>
+                            <br /><br />
                             <button type="submit">Submit Order</button>
                         </form>
                     </div>

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useCallback } from "react";
 
 export const ShopContext = createContext(null);
 
@@ -6,6 +6,7 @@ const ShopContextProvider = (props) => {
     const [all_product, setAll_Product] = useState([]);
     const [cartItems, setCartItems] = useState({});
     const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const storedCartItems = localStorage.getItem('cartItems');
@@ -14,7 +15,6 @@ const ShopContextProvider = (props) => {
         } else {
             const authToken = localStorage.getItem('auth-token');
             if (authToken) {
-                // Fetch cart data from the server if it doesn't exist in local storage
                 fetch('http://localhost:4000/user/getcart', {
                     method: "POST",
                     headers: {
@@ -28,9 +28,8 @@ const ShopContextProvider = (props) => {
             }
         }
         
-        // Fetch products from the server
         fetch('http://localhost:4000/product/allproducts')
-            .then((Response) => Response.json())
+            .then((response) => response.json())
             .then((data) => setAll_Product(data))
             .catch((error) => console.error('Failed to fetch products:', error));
     }, []);
@@ -88,7 +87,7 @@ const ShopContextProvider = (props) => {
             .then((data) => console.log(data))
             .catch((error) => console.error('Failed to remove from cart:', error));
         }
-    }
+    };
 
     const clearCart = () => {
         setCartItems({});
@@ -104,7 +103,7 @@ const ShopContextProvider = (props) => {
             }
         }
         return totalAmount;
-    }
+    };
 
     const getTotalCartItems = () => {
         let totalItem = 0;
@@ -114,7 +113,7 @@ const ShopContextProvider = (props) => {
             }
         }
         return totalItem;
-    }
+    };
 
     const createOrder = () => {
         if (!localStorage.getItem('auth-token')) {
@@ -123,8 +122,8 @@ const ShopContextProvider = (props) => {
         }
     
         const orderData = {
-            order_id: `ORD${Date.now()}`, // Example order ID
-            product_ids: Object.keys(cartItems).map(id => parseInt(id)), // Assuming product IDs are integers
+            order_id: `ORD${Date.now()}`,
+            product_ids: Object.keys(cartItems).map(id => parseInt(id)),
         };
     
         fetch('http://localhost:4000/order/createorder', {
@@ -143,9 +142,9 @@ const ShopContextProvider = (props) => {
         })
         .then((data) => {
             if (data.success) {
-                clearCart(); // Clear the cart after successful order creation
+                clearCart();
                 console.log('Order created successfully:', data.order);
-                fetchUserOrders(); // Fetch updated orders
+                fetchUserOrders();
             } else {
                 console.error('Failed to create order:', data.message);
             }
@@ -153,29 +152,35 @@ const ShopContextProvider = (props) => {
         .catch((error) => console.error('Failed to create order:', error));
     };
 
-    const fetchUserOrders = () => {
+    const fetchUserOrders = useCallback(async () => {
+        setLoading(true);
+
         if (!localStorage.getItem('auth-token')) {
+            setLoading(false);
             return;
         }
 
-        fetch('http://localhost:4000/order/userorders', {
-            method: "GET",
-            headers: {
-                'auth-token': localStorage.getItem('auth-token'),
-                'Content-Type': 'application/json',
-            }
-        })
-        .then((response) => {
-            if (!response.ok) {
+        try {
+            const res = await fetch('http://localhost:4000/order/myorders', {
+                method: "GET",
+                headers: {
+                    'auth-token': localStorage.getItem('auth-token'),
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!res.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.json();
-        })
-        .then((data) => {
-            setOrders(data); // Assuming setOrders is a state setter function
-        })
-        .catch((error) => console.error('Failed to fetch user orders:', error));
-    };
+
+            const data = await res.json();
+            setOrders(data.data);
+        } catch (error) {
+            console.error('Failed to fetch user orders:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     const contextValue = {
         all_product,
@@ -184,10 +189,11 @@ const ShopContextProvider = (props) => {
         removeFromCart,
         getTotalCartAmount,
         getTotalCartItems,
-        createOrder, // Add the createOrder function to the context
-        clearCart, // Add the clearCart function to the context
-        orders, // Add orders to the context
-        fetchUserOrders // Add fetchUserOrders to the context
+        createOrder,
+        clearCart,
+        orders,
+        fetchUserOrders,
+        loading
     };
 
     return (

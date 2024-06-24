@@ -10,7 +10,7 @@ const Navbar = () => {
   const [menu, setMenu] = useState("Shop");
   const [user, setUser] = useState({ name: '', email: '' });
   const { getTotalCartItems, clearCart } = useContext(ShopContext);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Use navigate hook from React Router
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -33,7 +33,7 @@ const Navbar = () => {
     localStorage.removeItem('auth-token');
     localStorage.removeItem('cartItems');
     clearCart();
-    window.location.replace('/login');
+    navigate('/login'); // Redirect to login page after logout
   };
 
   const handleChangePassword = async (oldPassword, newPassword) => {
@@ -64,7 +64,7 @@ const Navbar = () => {
     const result = await response.json();
     if (result.success) {
       alert('Account deleted successfully');
-      handleLogout();
+      handleLogout(); // After deleting account, logout and redirect to login page
     } else {
       alert('Error deleting account: ' + result.message);
     }
