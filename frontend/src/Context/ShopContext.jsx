@@ -9,6 +9,7 @@ const ShopContextProvider = (props) => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+
         const storedCartItems = localStorage.getItem('cartItems');
         if (storedCartItems) {
             setCartItems(JSON.parse(storedCartItems));
@@ -22,12 +23,12 @@ const ShopContextProvider = (props) => {
                         'Content-Type': 'application/json',
                     }
                 })
-                .then((response) => response.json())
-                .then((data) => setCartItems(data))
-                .catch((error) => console.error('Failed to fetch cart data:', error));
+                    .then((response) => response.json())
+                    .then((data) => setCartItems(data))
+                    .catch((error) => console.error('Failed to fetch cart data:', error));
             }
         }
-        
+
         fetch('http://localhost:4000/product/allproducts')
             .then((response) => response.json())
             .then((data) => setAll_Product(data))
@@ -37,19 +38,19 @@ const ShopContextProvider = (props) => {
     const addToCart = (itemId) => {
         if (!localStorage.getItem('auth-token')) {
             alert("You must login to purchase");
-            return; 
+            return;
         }
-    
+
         setCartItems((prev) => ({
             ...prev,
             [itemId]: (prev[itemId] || 0) + 1
         }));
-    
+
         localStorage.setItem('cartItems', JSON.stringify({
             ...cartItems,
             [itemId]: (cartItems[itemId] || 0) + 1
         }));
-    
+
         fetch('http://localhost:4000/user/addtocart', {
             method: "POST",
             headers: {
@@ -58,9 +59,9 @@ const ShopContextProvider = (props) => {
             },
             body: JSON.stringify({ "itemId": itemId }),
         })
-        .then((response) => response.json())
-        .then((data) => console.log(data))
-        .catch((error) => console.error('Failed to add to cart:', error));
+            .then((response) => response.json())
+            .then((data) => console.log(data))
+            .catch((error) => console.error('Failed to add to cart:', error));
     };
 
     const removeFromCart = (itemId) => {
@@ -83,9 +84,9 @@ const ShopContextProvider = (props) => {
                 },
                 body: JSON.stringify({ "itemId": itemId }),
             })
-            .then((response) => response.json())
-            .then((data) => console.log(data))
-            .catch((error) => console.error('Failed to remove from cart:', error));
+                .then((response) => response.json())
+                .then((data) => console.log(data))
+                .catch((error) => console.error('Failed to remove from cart:', error));
         }
     };
 
@@ -118,14 +119,14 @@ const ShopContextProvider = (props) => {
     const createOrder = () => {
         if (!localStorage.getItem('auth-token')) {
             alert("You must login to place an order");
-            return; 
+            return;
         }
-    
+
         const orderData = {
             order_id: `ORD${Date.now()}`,
             product_ids: Object.keys(cartItems).map(id => parseInt(id)),
         };
-    
+
         fetch('http://localhost:4000/order/createorder', {
             method: "POST",
             headers: {
@@ -134,22 +135,22 @@ const ShopContextProvider = (props) => {
             },
             body: JSON.stringify(orderData),
         })
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then((data) => {
-            if (data.success) {
-                clearCart();
-                console.log('Order created successfully:', data.order);
-                fetchUserOrders();
-            } else {
-                console.error('Failed to create order:', data.message);
-            }
-        })
-        .catch((error) => console.error('Failed to create order:', error));
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                if (data.success) {
+                    clearCart();
+                    console.log('Order created successfully:', data.order);
+                    fetchUserOrders();
+                } else {
+                    console.error('Failed to create order:', data.message);
+                }
+            })
+            .catch((error) => console.error('Failed to create order:', error));
     };
 
     const fetchUserOrders = useCallback(async () => {

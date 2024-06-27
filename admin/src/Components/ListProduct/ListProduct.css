@@ -59,6 +59,10 @@
     text-align: center;
 }
 
+listproduct-edit-button:hover {
+    background-color: #0056b3;
+  }
+
 .modal-background {
     position: fixed;
     top: 0;

@@ -63,19 +63,33 @@ const Orders = () => {
 
   return (
     <div className="orders">
-      <h2>My Orders</h2>
+      <h2>My Orders</h2><br/>
       {orders.length === 0 ? (
         <p>No orders found.</p>
       ) : (
         <div className="order-list">
-          {extendedOrders.map((order) => (
-            <div key={order._id} className="order-summary">
-              <p>Order ID: {order._id}</p>
-              <p>Status: {order.status}</p>
-              <p>Amount: ${order.amount.toFixed(2)}</p>
-              <button onClick={() => handleViewOrder(order)}>View</button>
-            </div>
-          ))}
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Status</th>
+                <th>Amount</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {extendedOrders.map((order) => (
+                <tr key={order._id} className="order-summary">
+                  <td>{order._id}</td>
+                  <td>{order.status}</td>
+                  <td>${order.amount.toFixed(2)}</td>
+                  <td>
+                    <button onClick={() => handleViewOrder(order)}>View</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -88,29 +102,35 @@ const Orders = () => {
                 <img src={remove_icon} alt="Close" className="close-icon" />
               </button>
             </div>
-            <p>Amount: ${selectedOrder.amount.toFixed(2)}</p>
-            <p>Payment Method: {selectedOrder.payment ? 'Paid' : 'Pending'}</p>
-            <p>Status: {selectedOrder.status}</p>
+            <p>Total Amount: ${selectedOrder.amount.toFixed(2)}</p><br/>
+            <p>Payment Method: {selectedOrder.payment ? 'Paid' : 'Pending'}</p><br/>
+            <p>Status: {selectedOrder.status}</p><br/>
             <p>Ordered Date: {new Date(selectedOrder.date).toLocaleString()}</p>
+            <br />
             <table className="product-table">
               <thead>
                 <tr>
                   <th>Product</th>
                   <th>Quantity</th>
-                  <th>Price</th>
+                  <th>Unit Price</th>
+                  <th>Total Amount</th>
                 </tr>
               </thead>
               <tbody>
-                {selectedOrder.productDetails.map((item, index) => (
-                  <tr key={index}>
-                    <td className="product-info">
-                      <img src={item.image} alt="product" className="product-image" />
-                      <span>{item.name}</span>
-                    </td>
-                    <td>{item.quantity}</td>
-                    <td>${item.price.toFixed(2)}</td>
-                  </tr>
-                ))}
+                {selectedOrder.productDetails.map((item, index) => {
+                  let total = item.price * item.quantity;
+                  return (
+                    <tr key={index}>
+                      <td className="product-info">
+                        <img src={item.image} alt="product" className="product-image" />
+                        <span>{item.name}</span>
+                      </td>
+                      <td>{item.quantity}</td>
+                      <td>${item.price.toFixed(2)}</td>
+                      <td>${total.toFixed(2)}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
