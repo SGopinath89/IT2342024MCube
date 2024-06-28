@@ -176,10 +176,10 @@ const ListOrders = () => {
               </button>
             </div>
             <div>
-              <p>User: {selectedOrder.user?.name || 'Unknown'}</p>
-              <p>Email: {selectedOrder.user?.email || 'Unknown'}</p>
+            
               <p>Total Amount: ${selectedOrder.amount?.toFixed(2)}</p>
-              <p>Payment Method: {selectedOrder.payment ? 'Paid' : 'Pending'}</p>
+              <p>Shippin Address: {selectedOrder.address}</p>
+              <p>Payment Status: {selectedOrder.payment ? 'Paid' : 'Pending'}</p>
               <p>Ordered Date: {formatDate(selectedOrder.date)}</p>
             </div>
             <table className="product-table">

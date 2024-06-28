@@ -26,14 +26,10 @@
     margin: 10px 0;
 }
 
-.button-container {
+.profile-dropdown .button-container {
     display: flex;
-    justify-content: flex-start;
     margin-top: 10px;
-}
-
-.button-container button {
-    margin-right: 10px; /* Add right margin to each button */
+    gap: 20px;
 }
 
 .profile-dropdown button {
@@ -70,7 +66,6 @@
     flex-direction: row;
     justify-content: space-between;
     width: 100%;
-    gap: 10px; /* Add space between buttons */
 }
 
 .change-password-form .button-container button {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';  // Add this line
 import './UserProfile.css';
 import UserProfile_icon from '../Assets/UserProfile_icon.png';
 
@@ -10,6 +11,8 @@ const UserProfile = ({ onChangePassword, onDeleteAccount }) => {
         newPassword: ''
     });
     const [user, setUser] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -25,10 +28,12 @@ const UserProfile = ({ onChangePassword, onDeleteAccount }) => {
                     const userData = await response.json();
                     setUser(userData);
                 } else {
-                    console.error('Failed to fetch user data');
+                    setError('Failed to fetch user data');
                 }
             } catch (error) {
-                console.error('Error fetching user data:', error);
+                setError('Error fetching user data');
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -73,37 +78,50 @@ const UserProfile = ({ onChangePassword, onDeleteAccount }) => {
             />
             {showProfile && (
                 <div className="profile-dropdown">
-                    <p>Name: <b>{user.name}</b></p>
-                    <p>Email: <b>{user.email}</b></p>
-                    {!showChangePassword && (
+                    {loading ? (
+                        <p>Loading...</p>
+                    ) : error ? (
+                        <p>{error}</p>
+                    ) : (
                         <>
-                            <button className='change-password-btn' onClick={() => setShowChangePassword(true)}>Change Password</button>
-                            <button className='delete-account-btn' onClick={handleDeleteAccount}>Delete Account</button>
+                            <p>Name: <b>{user.name}</b></p>
+                            <p>Email: <b>{user.email}</b></p>
+                            {!showChangePassword && (
+                                <div className='button-container'>
+                                    <button className='change-password-btn' onClick={() => setShowChangePassword(true)}>Change Password</button>
+                                    <button className='delete-account-btn' onClick={handleDeleteAccount}>Delete Account</button>
+                                </div>
+                            )}
+                            {showChangePassword && (
+                                <div className="change-password-form">
+                                    <input
+                                        type="password"
+                                        name="oldPassword"
+                                        placeholder="Old Password"
+                                        value={passwords.oldPassword}
+                                        onChange={handlePasswordChange}
+                                    />
+                                    <input
+                                        type="password"
+                                        name="newPassword"
+                                        placeholder="New Password"
+                                        value={passwords.newPassword}
+                                        onChange={handlePasswordChange}
+                                    />
+                                    <button onClick={submitPasswordChange}>Submit</button>
+                                </div>
+                            )}
                         </>
-                    )}
-                    {showChangePassword && (
-                        <div className="change-password-form">
-                            <input
-                                type="password"
-                                name="oldPassword"
-                                placeholder="Old Password"
-                                value={passwords.oldPassword}
-                                onChange={handlePasswordChange}
-                            />
-                            <input
-                                type="password"
-                                name="newPassword"
-                                placeholder="New Password"
-                                value={passwords.newPassword}
-                                onChange={handlePasswordChange}
-                            />
-                            <button onClick={submitPasswordChange}>Submit</button>
-                        </div>
                     )}
                 </div>
             )}
         </div>
     );
+};
+
+UserProfile.propTypes = {
+    onChangePassword: PropTypes.func.isRequired,
+    onDeleteAccount: PropTypes.func.isRequired
 };
 
 export default UserProfile;

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
-import './CSS/Orders.css'; // Import your CSS file
+import './CSS/Orders.css';
 import { ShopContext } from '../Context/ShopContext';
-import remove_icon from '../Components/Assets/cart_cross_icon.png'; // Import your remove icon
+import remove_icon from '../Components/Assets/cart_cross_icon.png';
 
 const Orders = () => {
   const { orders, fetchUserOrders, loading } = useContext(ShopContext);
@@ -57,13 +57,39 @@ const Orders = () => {
     setSelectedOrder(null);
   };
 
+  const cancelOrder = async (orderId) => {
+    try {
+      const response = await fetch(`http://localhost:4000/order/cancelorder/${orderId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        fetchUserOrders(); // Refresh orders after cancellation
+        closeModal(); // Close modal after cancellation
+      } else {
+        alert(data.message); // Display error message if cancellation failed
+      }
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      alert('Failed to cancel order. Please try again.');
+    }
+  };
+
   if (loading) {
     return <p className="loading">Loading...</p>;
   }
 
   return (
     <div className="orders">
-      <h2>My Orders</h2><br/>
+      <h2>My Orders</h2><br />
       {orders.length === 0 ? (
         <p>No orders found.</p>
       ) : (
@@ -102,9 +128,9 @@ const Orders = () => {
                 <img src={remove_icon} alt="Close" className="close-icon" />
               </button>
             </div>
-            <p>Total Amount: ${selectedOrder.amount.toFixed(2)}</p><br/>
-            <p>Payment Method: {selectedOrder.payment ? 'Paid' : 'Pending'}</p><br/>
-            <p>Status: {selectedOrder.status}</p><br/>
+            <p>Total Amount: ${selectedOrder.amount.toFixed(2)}</p><br />
+            <p>Payment Method: {selectedOrder.payment ? 'Paid' : 'Pending'}</p><br />
+            <p>Status: {selectedOrder.status}</p><br />
             <p>Ordered Date: {new Date(selectedOrder.date).toLocaleString()}</p>
             <br />
             <table className="product-table">
@@ -133,6 +159,14 @@ const Orders = () => {
                 })}
               </tbody>
             </table>
+
+            {/* Display cancel button for all orders */}
+            <button onClick={() => cancelOrder(selectedOrder._id)}>Cancel Order</button>
+            {/* Show alert if order status is not 'Pending' or 'Processing' */}
+            {/* Commented out because cancellation is allowed regardless of status */}
+            {/* {selectedOrder.status !== 'Pending' && selectedOrder.status !== 'Processing' && (
+              <p>You cannot cancel this order.</p>
+            )} */}
           </div>
         </div>
       )}
