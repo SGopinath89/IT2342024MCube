@@ -51,18 +51,16 @@ const CartItems = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         const token = localStorage.getItem('auth-token'); // Retrieve JWT token from localStorage
-
-        console.log(formData);
-
+    
         const orderData = {
             items: formData.items,
             amount: parseFloat(formData.amount),
             address: formData.address,
-            hasPaymentDetails: formData.hasPaymentDetails
+            payment: formData.hasPaymentDetails // Ensure payment details are included
         };
-
+    
         try {
             const response = await fetch('http://localhost:4000/order/createorder', {
                 method: 'POST',
@@ -72,13 +70,15 @@ const CartItems = () => {
                 },
                 body: JSON.stringify(orderData)
             });
-
+    
+            const responseData = await response.json();
+    
             if (response.ok) {
                 alert("Order submitted successfully!");
                 setShowPopup(false);
                 clearCart(); // Clear the cart after successful order submission
             } else {
-                alert("Failed to submit order.");
+                alert(`Failed to submit order: ${responseData.message}`);
             }
         } catch (error) {
             console.error("Error submitting order:", error);
@@ -151,14 +151,17 @@ const CartItems = () => {
                         <span className="close" onClick={() => setShowPopup(false)}>&times;</span>
                         <h2>Shipping Details</h2>
                         <form onSubmit={handleSubmit}>
-                            <label htmlFor="address">Delivery Address:</label>
-                            <textarea
+                            <label htmlFor="address">Address:</label>
+                            <input
+                                type="text"
                                 id="address"
                                 name="address"
                                 value={formData.address}
                                 onChange={handleInputChange}
                                 required
                             /><br /><br />
+
+    
 
                             <h2>Payment Details</h2>
 
@@ -175,7 +178,6 @@ const CartItems = () => {
                                 />
                             </div>
 
-
                             <div className="input-container">
                                 <input
                                     type="text"
@@ -187,7 +189,6 @@ const CartItems = () => {
                                     placeholder="Expiry Date (MM/YYYY)"
                                     required
                                 />
-
                             </div>
 
                             <div className="input-container">
@@ -201,11 +202,9 @@ const CartItems = () => {
                                     required
                                     placeholder="CVV"
                                 />
-
                             </div>
 
                             <div className="input-container">
-
                                 <input
                                     type="text"
                                     id="cardHolderName"
@@ -215,7 +214,6 @@ const CartItems = () => {
                                     required
                                     placeholder="Card Holder Name"
                                 />
-
                             </div>
                             <br /><br />
                             <button type="submit">Submit Order</button>
@@ -223,6 +221,7 @@ const CartItems = () => {
                     </div>
                 </div>
             )}
+
         </div>
     );
 }

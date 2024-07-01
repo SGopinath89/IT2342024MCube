@@ -24,11 +24,12 @@ const Orders = () => {
               throw new Error("Item not found");
             }
             const data = await res.json();
+            const product = data[0]; // Ensure product data is accessed correctly
             return {
               quantity,
-              image: data[0].image,
-              price: data[0].new_price,
-              name: data[0].name
+              image: product.image,
+              price: product.new_price,
+              name: product.name
             };
           }));
           return {
@@ -160,13 +161,7 @@ const Orders = () => {
               </tbody>
             </table>
 
-            {/* Display cancel button for all orders */}
             <button onClick={() => cancelOrder(selectedOrder._id)}>Cancel Order</button>
-            {/* Show alert if order status is not 'Pending' or 'Processing' */}
-            {/* Commented out because cancellation is allowed regardless of status */}
-            {/* {selectedOrder.status !== 'Pending' && selectedOrder.status !== 'Processing' && (
-              <p>You cannot cancel this order.</p>
-            )} */}
           </div>
         </div>
       )}

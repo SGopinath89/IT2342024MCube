@@ -11,20 +11,34 @@ const router = express.Router();
 // Create a new order
 router.post('/createorder', fetchuser, async (req, res) => {
   try {
-    const userId = req.user.id;
-    const newOrder = new Order({
-      userId: userId,
-      items: req.body.items,
-      amount: req.body.amount,
-      address: req.body.address,
-      payment: req.body.payment,
+    const { items, amount, address, payment } = req.body;
+
+    // Ensure items are stored in the desired format
+    const formattedItems = Object.entries(items).map(([productId, quantity]) => {
+      return { [productId]: quantity };
     });
+
+    const newOrder = new Order({
+      userId: req.user.id,
+      items: formattedItems,
+      amount,
+      address,
+      status: 'Order Pending',
+      payment,
+      date: new Date()
+    });
+
     await newOrder.save();
-    await User.findOneAndUpdate({ _id: userId }, { cartData: {} });
-    res.json({ success: true, message: "Order placed successfully" });
+
+    
+    const user = await User.findById(req.user.id);
+    user.cartData = {}; 
+    await user.save();
+
+    res.status(201).json({ success: true, message: 'Order created successfully' });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: "Error placing order" });
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Error creating order' });
   }
 });
 

@@ -20,6 +20,10 @@ router.post('/signup', async (req, res) => {
     return res.status(400).json({ success: false, errors: "Invalid name format" });
   }
 
+  if (!password || password.trim() === '') {
+    return res.status(400).json({ success: false, errors: "Password cannot be empty" });
+  }
+
   try {
     let check = await User.findOne({ email });
     if (check) {
@@ -27,9 +31,6 @@ router.post('/signup', async (req, res) => {
     }
 
     const cartData = {};
-    for (let i = 1; i <= 300; i++) {
-      cartData[i] = 0;
-    }
 
     const newUser = new User({ name, email, password, cartData });
     await newUser.save();
