@@ -3,15 +3,15 @@ import './CartItems.css';
 import { ShopContext } from '../../Context/ShopContext';
 import remove_icon from '../Assets/cart_cross_icon.png';
 
-
 const CartItems = () => {
     const { all_product, cartItems, removeFromCart, clearCart } = useContext(ShopContext);
     const [showPopup, setShowPopup] = useState(false);
     const [formData, setFormData] = useState({
         items: '',
         amount: '',
+        name: '', 
         address: '',
-        hasPaymentDetails: false // New state for payment details
+        hasPaymentDetails: false 
     });
 
     const calculateSubtotal = () => {
@@ -35,6 +35,7 @@ const CartItems = () => {
         setFormData({
             items: cartItems,
             amount: subtotal,
+            name: '', 
             address: '',
             hasPaymentDetails: false // Initialize as false
         });
@@ -57,6 +58,7 @@ const CartItems = () => {
         const orderData = {
             items: formData.items,
             amount: parseFloat(formData.amount),
+            name: formData.name, // Include name in the order data
             address: formData.address,
             payment: formData.hasPaymentDetails // Ensure payment details are included
         };
@@ -76,7 +78,7 @@ const CartItems = () => {
             if (response.ok) {
                 alert("Order submitted successfully!");
                 setShowPopup(false);
-                clearCart(); // Clear the cart after successful order submission
+                clearCart();
             } else {
                 alert(`Failed to submit order: ${responseData.message}`);
             }
@@ -151,8 +153,18 @@ const CartItems = () => {
                         <span className="close" onClick={() => setShowPopup(false)}>&times;</span>
                         <h2>Shipping Details</h2>
                         <form onSubmit={handleSubmit}>
-                            <label htmlFor="address">Address:</label>
                             <input
+                                placeholder='Enter your name'
+                                type="text"
+                                id="name"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                required
+                            /><br />
+
+                            <input
+                            placeholder='Enter your address'
                                 type="text"
                                 id="address"
                                 name="address"
@@ -160,8 +172,6 @@ const CartItems = () => {
                                 onChange={handleInputChange}
                                 required
                             /><br /><br />
-
-    
 
                             <h2>Payment Details</h2>
 
@@ -221,7 +231,6 @@ const CartItems = () => {
                     </div>
                 </div>
             )}
-
         </div>
     );
 }

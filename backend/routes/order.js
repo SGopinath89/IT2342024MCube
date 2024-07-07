@@ -11,7 +11,7 @@ const router = express.Router();
 // Create a new order
 router.post('/createorder', fetchuser, async (req, res) => {
   try {
-    const { items, amount, address, payment } = req.body;
+    const { items, amount, name, address, payment } = req.body;
 
     // Ensure items are stored in the desired format
     const formattedItems = Object.entries(items).map(([productId, quantity]) => {
@@ -22,6 +22,7 @@ router.post('/createorder', fetchuser, async (req, res) => {
       userId: req.user.id,
       items: formattedItems,
       amount,
+      name,
       address,
       status: 'Order Pending',
       payment,
@@ -89,7 +90,7 @@ router.delete('/cancelorder/:orderId', async (req, res) => {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
 
-    await Order.findByIdAndUpdate(orderId, { status: 'Cancelled' });
+    await Order.findByIdAndDelete(orderId, { status: 'Cancelled' });
 
     res.json({ success: true, message: "Order cancelled successfully" });
   } catch (error) {

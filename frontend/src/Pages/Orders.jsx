@@ -59,6 +59,9 @@ const Orders = () => {
   };
 
   const cancelOrder = async (orderId) => {
+    const confirmed = window.confirm('Are you sure you want to cancel the order?');
+    if (!confirmed) return;
+
     try {
       const response = await fetch(`http://localhost:4000/order/cancelorder/${orderId}`, {
         method: 'DELETE',
@@ -161,7 +164,7 @@ const Orders = () => {
               </tbody>
             </table>
 
-            <button onClick={() => cancelOrder(selectedOrder._id)}>Cancel Order</button>
+            <button className="cancelBtn" onClick={() => cancelOrder(selectedOrder._id)}>Cancel Order</button>
           </div>
         </div>
       )}

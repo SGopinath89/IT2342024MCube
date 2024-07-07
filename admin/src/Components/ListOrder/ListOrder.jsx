@@ -146,7 +146,7 @@ const ListOrders = () => {
         <>
           <div className="order-list-header">
             <p>Order ID</p>
-            <p>User</p>
+            <p>Name</p>
             <p>Status</p>
             <p>Amount</p>
             <p>Actions</p>
@@ -156,7 +156,7 @@ const ListOrders = () => {
             {extendedOrders.map((order) => (
               <div key={order._id} className="listproduct-format-main listproduct-format">
                 <p>{order._id}</p>
-                <p>{order.user?.name || 'Unknown'}</p>
+                <p>{order.name}</p>
                 <p>{order.status}</p>
                 <p>${order.amount?.toFixed(2)}</p>
                 <button className="listproduct-edit-button" onClick={() => handleViewOrder(order)}>View</button>

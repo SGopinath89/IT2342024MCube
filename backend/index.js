@@ -8,6 +8,8 @@ const userRoutes = require('./routes/user');
 const adminRoutes = require('./routes/admin'); 
 const orderRoutes = require('./routes/order');
 
+
+require('dotenv').config();
 const app = express();
 const port = 4000;
 
